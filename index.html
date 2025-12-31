@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>WA Rotator</title>
+    <script>
+        function rotate() {
+            const numbers = [
+                "628816384919", // ...19 → Mbak Nanik
+                "6283191074759", // ...59 → Mbak Ana
+            ];
+
+            // rotator index
+            let index = localStorage.getItem("wa_index");
+            if (index === null) {
+                index = 0;
+            } else {
+                index = (parseInt(index) + 1) % numbers.length;
+            }
+
+            localStorage.setItem("wa_index", index);
+
+            const selected = numbers[index];
+            const lastTwo = selected.slice(-2);
+
+            // TEMPLATE SESUAI FORMAT YANG KAMU MAU
+            let message = "";
+
+            if (lastTwo === "19") {
+                message = "Halo mbak Nanik [OT] saya mau tanya info rumah yang ada di tiktok official?";
+            } else if (lastTwo === "59") {
+                message = "Halo mbak Ana [OT] saya mau tanya info rumah yang ada di tiktok official?";
+            } else {
+                message = "Halo kak [OT], saya mau tanya unitnya";
+            }
+
+            // encode
+            const encoded = encodeURIComponent(message);
+
+            // redirect WA
+            window.location.href = "https://wa.me/" + selected + "?text=" + encoded;
+        }
+    </script>
+</head>
+
+<body onload="rotate()">
+    Redirecting...
+</body>
+
+</html>
+
+
+
