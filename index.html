@@ -1,55 +1,67 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <meta charset="UTF-8">
     <title>WA Rotator</title>
     <script>
         function rotate() {
             const numbers = [
-                "628816384919", // ...19 → Mbak Nanik
-                "6285117753190", // ...90 → Mas Adit
+                "628816384919", // ...19 -> Mbak Nanik
+                "6285743627297", // ...297 -> Mbak Laudia
+                "6282339712997", // ...997 -> Mbak Anggia
             ];
 
-            // rotator index
+            // --- ROTASI INDEX ---
+            // Catatan: localStorage bersifat PER-BROWSER, bukan global.
+            // Untuk traffic iklan (mayoritas first-time visitor), ini akan
+            // selalu jatuh ke index 0 karena localStorage-nya kosong.
+            // Kalau kamu mau rotasi MERATA ANTAR PENGUNJUNG (bukan cuma
+            // per device yang sama), pakai rotasi berbasis waktu di bawah
+            // (lihat opsi B), bukan localStorage.
+
             let index = localStorage.getItem("wa_index");
             if (index === null) {
                 index = 0;
             } else {
-                index = (parseInt(index) + 1) % numbers.length;
+                index = (parseInt(index, 10) + 1) % numbers.length;
             }
-
             localStorage.setItem("wa_index", index);
 
             const selected = numbers[index];
+
+            // FIX: sebelumnya variabel "lastThree" dipakai tapi tidak pernah
+            // dideklarasikan -> ReferenceError -> script berhenti sebelum
+            // redirect dijalankan. Ini penyebab utama "redirecting terus".
             const lastTwo = selected.slice(-2);
+            const lastThree = selected.slice(-3);
 
             // TEMPLATE SESUAI FORMAT YANG KAMU MAU
             let message = "";
-
             if (lastTwo === "19") {
-                message = "Halo mbak Nanik [OI] saya mau tanya info rumah yang ada di IG official?";
-            } else if (lastTwo === "59") {
-                message = "Halo mas Adit [OI] saya mau tanya info rumah yang ada di IG official?";
+                message = "Halo mbak Nanik [OT] saya mau tanya info rumah yang ada di Tiktok official?";
+            } else if (lastThree === "297") {
+                message = "Halo mbak Laudia [OT] saya mau tanya info rumah yang ada di Tiktok official?";
+            } else if (lastThree === "997") {
+                message = "Halo mbak Anggia [OT] saya mau tanya info rumah yang ada di Tiktok official?";
             } else {
-                message = "Halo kak [OI], saya mau tanya unitnya";
+                message = "Halo kak [OT], saya mau tanya unitnya";
             }
 
-            // encode
             const encoded = encodeURIComponent(message);
 
-            // redirect WA
-            window.location.href = "https://wa.me/" + selected + "?text=" + encoded;
+            // Fallback: kalau karena suatu alasan redirect gagal (mis. popup
+            // blocker di sebagian browser mobile), tampilkan link manual
+            // supaya user tidak stuck di halaman kosong.
+            const waUrl = "https://wa.me/" + selected + "?text=" + encoded;
+            document.getElementById("manual-link").href = waUrl;
+
+            window.location.href = waUrl;
         }
     </script>
 </head>
-
 <body onload="rotate()">
     Redirecting...
+    <br>
+    <a id="manual-link" href="#">Klik di sini jika tidak otomatis terarahkan</a>
 </body>
-
 </html>
-
-
-
-
